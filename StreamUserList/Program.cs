@@ -92,11 +92,6 @@ internal class Program
             Directory.CreateDirectory("Friends_No_Friends");
         }
 
-        if (!Directory.Exists("Friends_Broken_Ids"))
-        {
-            Directory.CreateDirectory("Friends_Broken_Ids");
-        }
-
         var now = DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss");
 
         Stopwatch stopWatch = new Stopwatch();
@@ -109,7 +104,6 @@ internal class Program
         await using (var ruWriter = File.CreateText($"Friends_Ru/Ru_{now}.txt"))
         await using (var burjuiWriter = File.CreateText($"Friends_Burjui/Burjui_{now}.txt"))
         await using (var noFriendsWriter = File.CreateText($"Friends_No_Friends/No_Friends_{now}.txt"))
-        await using (var brokenIdsWriter = File.CreateText($"Friends_Broken_Ids/Broken_Ids_{now}.txt"))
         {
             Task task1 = Task.Run(() => AnalyzeIds(
                 bunch1,
@@ -122,8 +116,7 @@ internal class Program
                 ruWriter,
                 chineseWriter,
                 burjuiWriter,
-                noFriendsWriter,
-                brokenIdsWriter));
+                noFriendsWriter));
 
             Task task2 = Task.Run(() => AnalyzeIds(
                 bunch2,
@@ -136,8 +129,7 @@ internal class Program
                 ruWriter,
                 chineseWriter,
                 burjuiWriter,
-                noFriendsWriter,
-                brokenIdsWriter));
+                noFriendsWriter));
 
             Task task3 = Task.Run(() => AnalyzeIds(
                 bunch3,
@@ -150,8 +142,7 @@ internal class Program
                 ruWriter,
                 chineseWriter,
                 burjuiWriter,
-                noFriendsWriter,
-                brokenIdsWriter));
+                noFriendsWriter));
 
             Task task4 = Task.Run(() => AnalyzeIds(
                 bunch4,
@@ -164,8 +155,7 @@ internal class Program
                 ruWriter,
                 chineseWriter,
                 burjuiWriter,
-                noFriendsWriter,
-                brokenIdsWriter));
+                noFriendsWriter));
 
             Task task5 = Task.Run(() => AnalyzeIds(
                 bunch5,
@@ -178,8 +168,7 @@ internal class Program
                 ruWriter,
                 chineseWriter,
                 burjuiWriter,
-                noFriendsWriter,
-                brokenIdsWriter));
+                noFriendsWriter));
 
             await Task.WhenAll(task1, task2, task3, task4, task5);
         }
@@ -211,8 +200,7 @@ internal class Program
         StreamWriter ruWriter,
         StreamWriter chineseWriter,
         StreamWriter burjuiWriter,
-        StreamWriter noFriendsWriter,
-        StreamWriter brokenIdsWriter)
+        StreamWriter noFriendsWriter)
     {
         var steamUserInterface = webInterfaceFactory.CreateSteamWebInterface<SteamUser>(httpClient);
 
@@ -332,8 +320,8 @@ internal class Program
             {
                 lock (writerLock)
                 {
-                    brokenIdsWriter.WriteLine($"{id}");
-                    brokenIdsWriter.Flush();
+                    noFriendsWriter.WriteLine($"{id}");
+                    noFriendsWriter.Flush();
                 }
                 await Task.Delay(1000);
             }
