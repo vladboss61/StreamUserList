@@ -1,5 +1,32 @@
 ﻿{
   "SteamApiKeys": "",
   "Rus": 3,
-  "Chinese": 5
+  "Chinese": 5,
+  "Proxies": [
+    {
+      "Host": "",
+      "UserName": "",
+      "Password": ""
+    },
+    {
+      "Host": "",
+      "UserName": "",
+      "Password": ""
+    },
+    {
+      "Host": "",
+      "UserName": "",
+      "Password": ""
+    },
+    {
+      "Host": "",
+      "UserName": "",
+      "Password": ""
+    },
+    {
+      "Host": "",
+      "UserName": "",
+      "Password": ""
+    }
+  ]
 }

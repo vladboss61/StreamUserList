@@ -11,6 +11,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using SysFile = System.IO.File;
 using System.Diagnostics;
+using System.Net;
 
 namespace StreamUserList;
 
@@ -21,6 +22,17 @@ internal sealed class AppConfig
     public int Rus { get; set; }
 
     public int Chinese { get; set; }
+
+    public HttpProxyConfig[] Proxies {get; set; }
+}
+
+internal sealed class HttpProxyConfig
+{
+    public string Host { get; set; }
+
+    public string UserName { get; set; }
+
+    public string Password { get; set; }
 }
 
 internal class Program
@@ -58,6 +70,11 @@ internal class Program
         {
             await Console.Out.WriteLineAsync("Что то не так с API Keys. Проверте что они передаются через запятую.");
             return;
+        }
+
+        if (options.Proxies.Length != 5)
+        {
+            await Console.Out.WriteLineAsync("Что то не так проксями. Проверте секцию Proxies:[....] в app-settings.json.");
         }
 
         (ulong[] bunch1, 
@@ -108,7 +125,17 @@ internal class Program
             Task task1 = Task.Run(() => AnalyzeIds(
                 bunch1,
                 webInterfaceFactory1,
-                new HttpClient(),
+                new HttpClient(new HttpClientHandler
+                {
+                    Proxy = new WebProxy(options.Proxies[0].Host)
+                    {
+                        Credentials = new NetworkCredential(options.Proxies[0].UserName, options.Proxies[0].Password)
+                    },
+                    UseProxy = true,
+                    PreAuthenticate = true,
+                    UseDefaultCredentials = false,
+                    //ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                }) { Timeout = TimeSpan.FromSeconds(10) },
                 options,
                 selfChineseWriter,
                 selfRuWriter,
@@ -121,7 +148,17 @@ internal class Program
             Task task2 = Task.Run(() => AnalyzeIds(
                 bunch2,
                 webInterfaceFactory2,
-                new HttpClient(),
+                new HttpClient(new HttpClientHandler
+                {
+                    Proxy = new WebProxy(options.Proxies[1].Host)
+                    {
+                        Credentials = new NetworkCredential(options.Proxies[1].UserName, options.Proxies[1].Password)
+                    },
+                    UseProxy = true,
+                    PreAuthenticate = true,
+                    UseDefaultCredentials = false,
+                    //ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                }) { Timeout = TimeSpan.FromSeconds(10) },
                 options,
                 selfChineseWriter,
                 selfRuWriter,
@@ -134,7 +171,17 @@ internal class Program
             Task task3 = Task.Run(() => AnalyzeIds(
                 bunch3,
                 webInterfaceFactory3,
-                new HttpClient(),
+                new HttpClient(new HttpClientHandler
+                {
+                    Proxy = new WebProxy(options.Proxies[2].Host)
+                    {
+                        Credentials = new NetworkCredential(options.Proxies[2].UserName, options.Proxies[2].Password)
+                    },
+                    UseProxy = true,
+                    PreAuthenticate = true,
+                    UseDefaultCredentials = false,
+                    //ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                }) { Timeout = TimeSpan.FromSeconds(10) },
                 options,
                 selfChineseWriter,
                 selfRuWriter,
@@ -147,7 +194,17 @@ internal class Program
             Task task4 = Task.Run(() => AnalyzeIds(
                 bunch4,
                 webInterfaceFactory4,
-                new HttpClient(),
+                new HttpClient(new HttpClientHandler
+                {
+                    Proxy = new WebProxy(options.Proxies[3].Host)
+                    {
+                        Credentials = new NetworkCredential(options.Proxies[3].UserName, options.Proxies[3].Password)
+                    },
+                    UseProxy = true,
+                    PreAuthenticate = true,
+                    UseDefaultCredentials = false,
+                    //ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                }) { Timeout = TimeSpan.FromSeconds(10) },
                 options,
                 selfChineseWriter,
                 selfRuWriter,
@@ -160,7 +217,18 @@ internal class Program
             Task task5 = Task.Run(() => AnalyzeIds(
                 bunch5,
                 webInterfaceFactory5,
-                new HttpClient(),
+                new HttpClient(new HttpClientHandler
+                {
+                    Proxy = new WebProxy(options.Proxies[4].Host)
+                    {
+                        Credentials = new NetworkCredential(options.Proxies[4].UserName, options.Proxies[4].Password)
+                    },
+                    
+                    UseProxy = true,
+                    PreAuthenticate = true,
+                    UseDefaultCredentials = false,
+                    //ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                }) { Timeout = TimeSpan.FromSeconds(10) },
                 options,
                 selfChineseWriter,
                 selfRuWriter,
@@ -210,7 +278,7 @@ internal class Program
             var chineses = new List<ulong>();
             var russes = new List<ulong>();
 
-            await Task.Delay(1500);
+            await Task.Delay(350);
 
             try
             {
@@ -232,7 +300,7 @@ internal class Program
 
                     var playerSummaryResponse = await steamUserInterface.GetPlayerSummaryAsync(friend.SteamId);
 
-                    await Task.Delay(300);
+                    await Task.Delay(120);
 
                     if (playerSummaryResponse is not { Data: not null }
                         || string.IsNullOrWhiteSpace(playerSummaryResponse.Data.Nickname))
@@ -314,7 +382,7 @@ internal class Program
                     }
                 }
 
-                await Task.Delay(200);
+                await Task.Delay(300);
             }
             catch (Exception ex)
             {
@@ -323,7 +391,7 @@ internal class Program
                     noFriendsWriter.WriteLine($"{id}");
                     noFriendsWriter.Flush();
                 }
-                await Task.Delay(1000);
+                await Task.Delay(50);
             }
         }
     }
